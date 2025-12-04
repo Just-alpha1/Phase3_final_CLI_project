@@ -10,16 +10,16 @@ from sqlalchemy import create_engine
 
 @pytest.fixture(scope="function", autouse=True)
 def setup_database():
-    # Use in-memory database for tests
+
     engine = create_engine("sqlite:///:memory:", echo=False)
     Base.metadata.create_all(bind=engine)
-    # Override the global engine
+
     import lib.db.session
     lib.db.session.engine = engine
     lib.db.session.SessionLocal = lib.db.session.sessionmaker(bind=engine)
     init_db()
     yield
-    # Clean up after test
+
     Base.metadata.drop_all(bind=engine)
 
 def test_add_bookmaker():

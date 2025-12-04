@@ -2,8 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from .models import Base
 
-
-engine = create_engine("sqlite:///betcli.db", echo=False)  # Set echo=True for debugging SQL
+engine = create_engine("sqlite:///betcli.db", echo=False)
 SessionLocal = sessionmaker(bind=engine)
 
 def init_db():
@@ -14,4 +13,4 @@ def get_db():
     try:
         yield db
     finally:
-        db.close()  # Always close the session to prevent memory leaks
+        db.close()

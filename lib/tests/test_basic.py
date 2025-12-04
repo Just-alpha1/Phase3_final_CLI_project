@@ -14,36 +14,36 @@ def test_database_initialization():
 
 def test_bookmaker_model():
     bookmaker = Bookmaker(name="Test Bookmaker")
-    assert bookmaker.name  =="Test Bookmaker"
+    assert bookmaker.name   == "Test Bookmaker"
     assert bookmaker.id is None
 
 def test_bet_model():
     bookmaker = Bookmaker(name="Test Bookmaker")
     bet = Bet(event="Test Event", selection="Test Selection", odds=2.0, stake=100.0, sport="Soccer", bookmaker=bookmaker)
-    assert bet.event  =="Test Event"
-    assert bet.selection  =="Test Selection"
-    assert bet.odds  ==2.0
-    assert bet.stake  ==100.0
-    assert bet.sport  =="Soccer"
-    assert bet.result  =="pending"
+    assert bet.event   == "Test Event"
+    assert bet.selection   == "Test Selection"
+    assert bet.odds   == 2.0
+    assert bet.stake   == 100.0
+    assert bet.sport   == "Soccer"
+    assert bet.result   == "pending"
 
 def test_bet_profit_loss_calculation():
     bookmaker = Bookmaker(name="Test Bookmaker")
     bet = Bet(event="Test Event", selection="Test Selection", odds=2.0, stake=100.0, sport="Soccer", bookmaker=bookmaker)
 
-    assert bet.profit_loss()  ==0.0
+    assert bet.profit_loss()   == 0.0
 
     bet.result = "won"
-    assert bet.profit_loss()  ==100.0
+    assert bet.profit_loss()   == 100.0
 
     bet.result = "lost"
-    assert bet.profit_loss()  ==-100.0
+    assert bet.profit_loss()   == -100.0
 
     bet.result = "push"
-    assert bet.profit_loss()  ==0.0
+    assert bet.profit_loss()   == 0.0
 
     bet.result = "void"
-    assert bet.profit_loss()  ==0.0
+    assert bet.profit_loss()   == 0.0
 
 def test_imports():
     try:

@@ -7,14 +7,13 @@ Base = declarative_base()
 
 class Bookmaker(Base):
     __tablename__ = "bookmakers"
-    
+
     id = Column(Integer, primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
     bets = relationship("Bet", back_populates="bookmaker", cascade="all, delete-orphan")
-    
+
     def __repr__(self):
         return f"<Bookmaker(name='{self.name}')>"
-
 
 class Bet(Base):
     __tablename__ = "bets"
@@ -35,7 +34,7 @@ class Bet(Base):
         super().__init__(**kwargs)
         if 'result' not in kwargs:
             self.result = "pending"
-    
+
     def profit_loss(self):
         if self.result == "won":
             profit = self.stake * (self.odds - 1)
@@ -44,23 +43,21 @@ class Bet(Base):
             loss = -self.stake
             return round(loss, 2)
         elif self.result in ("void", "push"):
-            return 0.0 
+            return 0.0
         else:
             return 0.0
 
     def __repr__(self):
         return f"<Bet(id={self.id}, event='{self.event}', selection='{self.selection}', result='{self.result}')>"
 
-
 class Bankroll(Base):
     __tablename__ = "bankroll"
-    
+
     id = Column(Integer, primary_key=True)
     balance = Column(Float, nullable=False)
-    
+
     def __repr__(self):
         return f"<Bankroll(balance={self.balance:.2f})>"
-
 
 class BankrollSnapshot(Base):
     __tablename__ = "bankroll_snapshots"
@@ -70,6 +67,6 @@ class BankrollSnapshot(Base):
     timestamp = Column(DateTime, default=datetime.utcnow)
     bet_id = Column(Integer, ForeignKey("bets.id"))
     bet = relationship("Bet", back_populates="snapshots")
-    
+
     def __repr__(self):
         return f"<BankrollSnapshot(balance={self.balance:.2f}, timestamp='{self.timestamp}')>"
