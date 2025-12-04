@@ -1,149 +1,61 @@
-A professional sports betting tracker CLI application built with Python, SQLAlchemy, and Click.
+##Scholar Betting Tracker
 
-## Features
+##Description
+Scholar Betting Tracker is a professional sports betting CLI application built with Python, SQLAlchemy, and Click. It helps users track their bets, manage bankrolls, calculate profits/losses, and make data-driven decisions to improve long-term betting performance. All data is securely stored in a local SQLite database, ensuring persistent and accurate records without relying on external services.
 
-- Add and manage bookmakers
-- Track bets with odds, stakes, and results
-- Bankroll management
-- Profit/loss calculations
-- Export bets to CSV
-- Kelly criterion calculator
+##Author
+Collins Kiaritha Thuo
 
-## Installation
+##Setup Instructions
+1.Clone this repository:
+   git clone:git@github.com:Just-alpha1/Phase3_final_CLI_project.git
+2.Navigate into the project directory:
+  cd betting-tracker
+3.Install Pipenv if not already installed:
+  pip install pipenv
+4.Install dependencies and activate the virtual environment:
+  pipenv install
+  pipenv shell
+5.Install the package in editable mode:
+  pipenv install -e .
 
-1. Install Pipenv if not already installed:
-   ```bash
-   pip install pipenv
-   ```
+##BDD(Behavior Driven Development)
+1.Input: Add a bookmaker with a name (e.g., "Pinnacle")
+  Output: Bookmaker added and stored in the database
+2.Input: Add a bet with event, selection, odds, stake, sport, and bookmaker
+  Output: Bet recorded and saved in the database
+3.Input: Invalid input (e.g., negative stake or non-existent bookmaker)
+  Output: Error message requesting valid input
+4.Input: List all bets
+  Output: Beautiful table displaying IDs, dates, sports, events, selections, odds, stakes, results, P/L, and bookmakers
+5.Input: Update bet result (e.g., mark as "won" or "lost")
+  Output: Result updated, profit/loss calculated, and bankroll adjusted automatically
+6.Input: View current bankroll and stats
+  Output: Displays current balance, total profit, ROI (%), win rate, average odds, and total bets
+7.Input: Calculate Kelly stake with odds, probability, and bankroll
+  Output: Recommendations for full, half, and quarter Kelly stakes
+8.Input: Export bets to CSV
+  Output: All bets exported to a CSV file
+9.Input: Exit application
+  Output: Program closes successfully
 
-2. Install dependencies:
-   ```bash
-   pipenv install
-   ```
+##Technologies Used
+1.Python 3.x
+2.SQLAlchemy
+3.Click 
+4.SQLite
+5.Pipenv
+6.Pytest 
+7.Object-Oriented Programming (OOP)
 
-3. Activate the virtual environment:
-   ```bash
-   pipenv shell
-   ```
+##Contact Information
+GitHub:https://github.com/Just-alpha1/Phase3_final_CLI_project.git
 
-4. Install the package in editable mode:
-   ```bash
-   pipenv install -e .
-   ```
+##License
+MIT License
 
-## Usage
+Copyright (c) 2025
 
-Run the CLI:
-```bash
-betcli --help
-```
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-Add a bookmaker:
-```bash
-betcli add-bookmaker "Pinnacle"
-```
-
-List bookmakers:
-```bash
-betcli list-bookmakers
-```
-
-## Development
-
-To run tests:
-```bash
-pytest
-=======
-# Scholar Betting Tracker
-
-A professional sports betting tracker CLI application built with Python, SQLAlchemy, and Click.
-
-## Problem Statement
-Most sports bettors lose money long-term because they fail to track their bets, manage their bankroll properly, and make decisions based on emotion rather than data — Scholar Betting Tracker solves this by providing a fast, local, professional-grade betting tracker and performance analyzer directly from the terminal.
-
-## Features
-
-### MVP (Minimum Viable Product)
-- **Add a Bet**: Enter event, selection, decimal odds, stake, sport, date, and bookmaker
-- **List All Bets**: Display all bets in a beautiful table with ID, date, sport, event, selection, odds, stake, result, P/L, and bookmaker
-- **Delete Bets**: Permanently clear bets from the slip
-- **Update Bet Result**: Mark a bet as Won/Lost/Push/Void (automatically updates profit/loss and bankroll)
-- **View Current Bankroll & Performance Stats**: Shows current balance, total profit, ROI (%), win rate, average odds, total bets
-- **Calculate Kelly Stake**: Input odds and estimated probability → returns full, half, and quarter Kelly stake recommendations
-- **Persistent Storage**: All data stored in a local SQLite database
-- **Export Data**: Export all bets to CSV with one command
-
-## Installation
-
-1. Install Pipenv if not already installed:
-   ```bash
-   pip install pipenv
-   ```
-
-2. Install dependencies:
-   ```bash
-   pipenv install
-   ```
-
-3. Activate the virtual environment:
-   ```bash
-   pipenv shell
-   ```
-
-4. Install the package in editable mode:
-   ```bash
-   pipenv install -e .
-   ```
-
-## Usage
-
-Run the CLI:
-```bash
-python main.py --help
-```
-
-Add a bookmaker:
-```bash
-python main.py add-bookmaker "Pinnacle"
-```
-
-Add a bet:
-```bash
-python main.py add-bet "Liverpool vs Chelsea" "Liverpool" 2.1 100 "Soccer" "Pinnacle"
-```
-
-List all bets:
-```bash
-python main.py list-bets
-```
-
-Update bet result:
-```bash
-python main.py update-bet-result 1 won
-```
-
-Set bankroll:
-```bash
-python main.py set-bankroll 1000
-```
-
-Show bankroll stats:
-```bash
-python main.py show-bankroll
-```
-
-Kelly calculator:
-```bash
-python main.py kelly-calculator 2.1 60 1000
-```
-
-Export bets to CSV:
-```bash
-python main.py export-bets
-```
-
-## Development
-
-To run tests:
-```bash
-pytest
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
