@@ -14,7 +14,6 @@ def test_bookmaker_creation():
     assert bookmaker.name == "Test Bookmaker"
 
 def test_bet_creation():
-    init_db()
     db = next(get_db())
     bookmaker = Bookmaker(name="Test Bookmaker")
     db.add(bookmaker)

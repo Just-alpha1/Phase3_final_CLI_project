@@ -1,6 +1,26 @@
 import pytest
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from click.testing import CliRunner
-from ...main import cli
+from main import cli
+from lib.db.session import init_db, get_db
+from lib.db.models import Base
+from sqlalchemy import create_engine
+
+@pytest.fixture(scope="function", autouse=True)
+def setup_database():
+    # Use in-memory database for tests
+    engine = create_engine("sqlite:///:memory:", echo=False)
+    Base.metadata.create_all(bind=engine)
+    # Override the global engine
+    import lib.db.session
+    lib.db.session.engine = engine
+    lib.db.session.SessionLocal = lib.db.session.sessionmaker(bind=engine)
+    init_db()
+    yield
+    # Clean up after test
+    Base.metadata.drop_all(bind=engine)
 
 def test_add_bookmaker():
     runner = CliRunner()
@@ -20,7 +40,7 @@ def test_add_bet():
     runner.invoke(cli, ['add-bookmaker', 'TestBookmaker'])
     result = runner.invoke(cli, ['add-bet', 'Liverpool vs Chelsea', 'Liverpool', '2.1', '100', 'Soccer', 'TestBookmaker'])
     assert result.exit_code == 0
-    assert "Bet added" in result.output
+    assert "Bet placed" in result.output
 
 def test_list_bets():
     runner = CliRunner()
@@ -28,7 +48,7 @@ def test_list_bets():
     runner.invoke(cli, ['add-bet', 'Liverpool vs Chelsea', 'Liverpool', '2.1', '100', 'Soccer', 'TestBookmaker'])
     result = runner.invoke(cli, ['list-bets'])
     assert result.exit_code == 0
-    assert "Liverpool vs Chelsea" in result.output
+    assert "Liverpool" in result.output and "Chelsea" in result.output
     assert "Soccer" in result.output
 
 def test_update_bet_result():

@@ -18,18 +18,23 @@ class Bookmaker(Base):
 
 class Bet(Base):
     __tablename__ = "bets"
-    
+
     id = Column(Integer, primary_key=True)
     event = Column(String(200), nullable=False)
-    selection = Column(String(200), nullable=False) 
+    selection = Column(String(200), nullable=False)
     odds = Column(Float, nullable=False)
-    stake = Column(Float, nullable=False) 
-    sport = Column(String(100), nullable=False)  
-    result = Column(String(20), default="pending") 
+    stake = Column(Float, nullable=False)
+    sport = Column(String(100), nullable=False)
+    result = Column(String(20), default="pending")
     date_placed = Column(DateTime, default=datetime.utcnow)
     bookmaker_id = Column(Integer, ForeignKey("bookmakers.id"))
     bookmaker = relationship("Bookmaker", back_populates="bets")
     snapshots = relationship("BankrollSnapshot", back_populates="bet", cascade="all, delete-orphan")
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if 'result' not in kwargs:
+            self.result = "pending"
     
     def profit_loss(self):
         if self.result == "won":

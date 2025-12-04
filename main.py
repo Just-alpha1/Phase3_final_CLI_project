@@ -1,6 +1,6 @@
 import click
 from datetime import datetime
-from lib.db.session import getdb, initdb
+from lib.db.session import get_db, init_db
 from lib.db.models import Bookmaker, Bet, Bankroll, BankrollSnapshot
 from rich.console import Console
 from rich.table import Table
@@ -9,22 +9,24 @@ console = Console()
 
 @click.group()
 def cli():
-    """BetCLI - Scholar betting tracker"""
+    """BetCLI – Sports Betting Tracker for Pros"""
     pass
 
-initdb()
+# Run this once at startup
+init_db()
 
 @cli.command()
 @click.argument("name")
-def addbookmaker(name: str):
-    db = next(getdb())
-    if db.query(Bookmaker).filterby(name=name).first():
+def add_bookmaker(name):
+    """Add a new bookmaker"""
+    db = next(get_db())
+    if db.query(Bookmaker).filter_by(name=name).first():
         click.echo(f"Bookmaker '{name}' already exists!")
         return
     bookmaker = Bookmaker(name=name)
     db.add(bookmaker)
     db.commit()
-    click.echo(f"Bookmaker '{name}' added successfully!")
+    click.echo(f"Bookmaker '{name}' added!")
 
 @cli.command()
 @click.argument("event")
@@ -32,73 +34,152 @@ def addbookmaker(name: str):
 @click.argument("odds", type=float)
 @click.argument("stake", type=float)
 @click.argument("sport")
-@click.argument("bookmakername")
-def addbet(event: str, selection: str, odds: float, stake: float, sport: str, bookmakername: str):
-    db = next(getdb())
-    bookmaker = db.query(Bookmaker).filterby(name=bookmakername).first()
+@click.argument("bookmaker_name")
+def add_bet(event, selection, odds, stake, sport, bookmaker_name):
+    """Add a new bet"""
+    db = next(get_db())
+    bookmaker = db.query(Bookmaker).filter_by(name=bookmaker_name).first()
     if not bookmaker:
-        click.echo(f"Bookmaker '{bookmakername}' not found! Please add it first using 'addbookmaker'.")
+        click.echo(f"Bookmaker '{bookmaker_name}' not found! Add it first.")
         return
-    bet = Bet(
-        event=event,
-        selection=selection,
-        odds=odds,
-        stake=stake,
-        sport=sport,
-        bookmaker=bookmaker
-    )
+    bet = Bet(event=event, selection=selection, odds=odds, stake=stake, sport=sport, bookmaker=bookmaker)
     db.add(bet)
     db.commit()
-    click.echo(f"Bet placed: {event} - {selection} at {odds} odds, ${stake:.2f} staked on {sport} with {bookmakername}")
+    click.echo(f"Bet placed: {event} - {selection} at {odds} odds, ${stake:.2f} staked on {sport}")
 
 @cli.command()
-def listbookmakers():
-    db = next(getdb())
+def list_bookmakers():
+    """List all bookmakers"""
+    db = next(get_db())
     bookmakers = db.query(Bookmaker).all()
+    from tabulate import tabulate
     if bookmakers:
-
-        table = Table(title="Bookmakers")
-        table.addcolumn("ID")
-        table.addcolumn("Name")
-        for bookmaker in bookmakers:
-            table.addrow(str(bookmaker.id), bookmaker.name)
-        console.print(table)
+        headers = ["ID", "Name"]
+        rows = [[b.id, b.name] for b in bookmakers]
+        click.echo(tabulate(rows, headers=headers, tablefmt="grid"))
     else:
-        click.echo("No bookmakers found. Add some using 'addbookmaker'!")
+        click.echo("No bookmakers found.")
 
 @cli.command()
-def listbets():
-    db = next(getdb())
+def list_bets():
+    """List all bets with profit/loss"""
+    db = next(get_db())
     bets = db.query(Bet).all()
-    if bets:
-        table = Table(title="All Bets")
-        table.addcolumn("ID", style="cyan")
-        table.addcolumn("Date Placed", style="magenta")
-        table.addcolumn("Sport")
-        table.addcolumn("Event")
-        table.addcolumn("Selection")
-        table.addcolumn("Odds")
-        table.addcolumn("Stake")
-        table.addcolumn("Result")
-        table.addcolumn("P/L")
-        table.addcolumn("Bookmaker")
+    table = Table(title="Bets")
+    table.add_column("ID")
+    table.add_column("Date")
+    table.add_column("Sport")
+    table.add_column("Event")
+    table.add_column("Selection")
+    table.add_column("Odds")
+    table.add_column("Stake")
+    table.add_column("Result")
+    table.add_column("P/L")
+    table.add_column("Bookmaker")
+    for bet in bets:
+        table.add_row(
+            str(bet.id),
+            bet.date_placed.strftime("%Y-%m-%d"),
+            bet.sport,
+            bet.event,
+            bet.selection,
+            str(bet.odds),
+            f"${bet.stake:.2f}",
+            bet.result,
+            f"${bet.profit_loss():.2f}",
+            bet.bookmaker.name
+        )
+    console.print(table)
 
+@cli.command()
+@click.argument("bet_id", type=int)
+@click.argument("result")
+def update_bet_result(bet_id, result):
+    """Update the result of a bet"""
+    db = next(get_db())
+    bet = db.query(Bet).filter_by(id=bet_id).first()
+    if not bet:
+        click.echo(f"Bet with ID {bet_id} not found!")
+        return
+    bet.result = result
+    db.commit()
+    click.echo(f"Bet {bet_id} result updated to '{result}'")
+
+@cli.command()
+@click.argument("bet_id", type=int)
+def delete_bet(bet_id):
+    """Delete a bet"""
+    db = next(get_db())
+    bet = db.query(Bet).filter_by(id=bet_id).first()
+    if not bet:
+        click.echo(f"Bet with ID {bet_id} not found!")
+        return
+    db.delete(bet)
+    db.commit()
+    click.echo(f"Bet {bet_id} deleted!")
+
+@cli.command()
+@click.argument("balance", type=float)
+def set_bankroll(balance):
+    """Set the bankroll balance"""
+    db = next(get_db())
+    bankroll = db.query(Bankroll).first()
+    if bankroll:
+        bankroll.balance = balance
+    else:
+        bankroll = Bankroll(balance=balance)
+        db.add(bankroll)
+    db.commit()
+    click.echo(f"Bankroll set to ${balance:.2f}!")
+
+@cli.command()
+def show_bankroll():
+    """Show the current bankroll balance"""
+    db = next(get_db())
+    bankroll = db.query(Bankroll).first()
+    if bankroll:
+        click.echo(f"Current Balance: ${bankroll.balance:.2f}")
+    else:
+        click.echo("No bankroll set. Use 'set-bankroll' to set one.")
+
+@cli.command()
+@click.argument("odds", type=float)
+@click.argument("probability", type=float)
+@click.argument("bankroll", type=float)
+def kelly_calculator(odds, probability, bankroll):
+    """Calculate Kelly bet size"""
+    kelly = ((odds - 1) * probability - (1 - probability)) / (odds - 1)
+    full_kelly = kelly * bankroll
+    half_kelly = full_kelly / 2
+    quarter_kelly = full_kelly / 4
+    click.echo(f"Full Kelly: ${full_kelly:.2f}")
+    click.echo(f"Half Kelly: ${half_kelly:.2f}")
+    click.echo(f"Quarter Kelly: ${quarter_kelly:.2f}")
+
+@cli.command()
+@click.argument("filename")
+def export_bets(filename):
+    """Export bets to CSV"""
+    db = next(get_db())
+    bets = db.query(Bet).all()
+    import csv
+    with open(filename, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['ID', 'Date', 'Sport', 'Event', 'Selection', 'Odds', 'Stake', 'Result', 'P/L', 'Bookmaker'])
         for bet in bets:
-            table.addrow(
-                str(bet.id),
-                bet.dateplaced.strftime("%Y-%m-%d"),
+            writer.writerow([
+                bet.id,
+                bet.date_placed.strftime("%Y-%m-%d"),
                 bet.sport,
                 bet.event,
                 bet.selection,
-                str(bet.odds),
-                f"${bet.stake:.2f}",
-                bet.result or "Pending",
-                f"${bet.profitloss():.2f}",
+                bet.odds,
+                bet.stake,
+                bet.result,
+                bet.profit_loss(),
                 bet.bookmaker.name
-            )
-        console.print(table)
-    else:
-        click.echo("No bets found. Add some using 'add_bet'!")
+            ])
+    click.echo(f"Bets exported to {filename}!")
 
-if name == "main":
+if __name__ == "__main__":
     cli()
