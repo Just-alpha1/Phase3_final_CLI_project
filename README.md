@@ -5,11 +5,9 @@ Scholar Betting Tracker
 The Betting Tracker is a professional sports betting CLI application built with Python, SQLAlchemy, and Click. It helps users track their bets, manage bankrolls, calculate profits/losses, and make data-driven decisions to improve long-term betting performance. All data is securely stored in a local SQLite database, ensuring persistent and accurate records without relying on external services.
 
 #Author
-
 Collins Kiaritha Thuo
 
 #Setup Instructions
-
 1.Clone this repository
 
 2.Navigate into project directory
@@ -19,7 +17,6 @@ Collins Kiaritha Thuo
 4.Create and activate the virtual environment
 
 #BDD (Behavior Driven Development)
-
 1.Input: Add a bookmaker with a name (e.g., "Pinnacle")
 
   Output: Bookmaker added and stored in the database
@@ -54,7 +51,6 @@ Collins Kiaritha Thuo
 
 
 #Technologies Used
-
  .Python 3.x
 
  .SQLAlchemy
@@ -70,11 +66,9 @@ Collins Kiaritha Thuo
  .Object-Oriented Programming (OOP)
 
 #Contact Information
-
 GitHub: https://github.com/Just-alpha1
 
 #License
-
 MIT License
 
 Copyright (c) 2025

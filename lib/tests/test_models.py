@@ -31,7 +31,6 @@ def test_bet_creation():
     assert bet.bookmaker == bookmaker
 
 def test_profit_loss_calculation():
-    init_db()
     db = next(get_db())
     bookmaker = Bookmaker(name="Test Bookmaker")
     db.add(bookmaker)
