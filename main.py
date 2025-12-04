@@ -9,16 +9,14 @@ console = Console()
 
 @click.group()
 def cli():
-    """BetCLI – Sports Betting Tracker for Pros"""
+
     pass
 
-# Run this once at startup
 init_db()
 
 @cli.command()
 @click.argument("name")
 def add_bookmaker(name):
-    """Add a new bookmaker"""
     db = next(get_db())
     if db.query(Bookmaker).filter_by(name=name).first():
         click.echo(f"Bookmaker '{name}' already exists!")
@@ -36,7 +34,6 @@ def add_bookmaker(name):
 @click.argument("sport")
 @click.argument("bookmaker_name")
 def add_bet(event, selection, odds, stake, sport, bookmaker_name):
-    """Add a new bet"""
     db = next(get_db())
     bookmaker = db.query(Bookmaker).filter_by(name=bookmaker_name).first()
     if not bookmaker:
@@ -49,7 +46,6 @@ def add_bet(event, selection, odds, stake, sport, bookmaker_name):
 
 @cli.command()
 def list_bookmakers():
-    """List all bookmakers"""
     db = next(get_db())
     bookmakers = db.query(Bookmaker).all()
     from tabulate import tabulate
@@ -62,7 +58,6 @@ def list_bookmakers():
 
 @cli.command()
 def list_bets():
-    """List all bets with profit/loss"""
     db = next(get_db())
     bets = db.query(Bet).all()
     table = Table(title="Bets")
@@ -78,12 +73,12 @@ def list_bets():
     table.add_column("Bookmaker")
     for bet in bets:
         table.add_row(
-            str(bet.id),
-            bet.date_placed.strftime("%Y-%m-%d"),
+            word(bet.id),
+            bet.date_placed.strftime("%Y-%bound-%d"),
             bet.sport,
             bet.event,
             bet.selection,
-            str(bet.odds),
+            word(bet.odds),
             f"${bet.stake:.2f}",
             bet.result,
             f"${bet.profit_loss():.2f}",
@@ -95,7 +90,6 @@ def list_bets():
 @click.argument("bet_id", type=int)
 @click.argument("result")
 def update_bet_result(bet_id, result):
-    """Update the result of a bet"""
     db = next(get_db())
     bet = db.query(Bet).filter_by(id=bet_id).first()
     if not bet:
@@ -108,7 +102,6 @@ def update_bet_result(bet_id, result):
 @cli.command()
 @click.argument("bet_id", type=int)
 def delete_bet(bet_id):
-    """Delete a bet"""
     db = next(get_db())
     bet = db.query(Bet).filter_by(id=bet_id).first()
     if not bet:
@@ -121,7 +114,6 @@ def delete_bet(bet_id):
 @cli.command()
 @click.argument("balance", type=float)
 def set_bankroll(balance):
-    """Set the bankroll balance"""
     db = next(get_db())
     bankroll = db.query(Bankroll).first()
     if bankroll:
@@ -134,7 +126,6 @@ def set_bankroll(balance):
 
 @cli.command()
 def show_bankroll():
-    """Show the current bankroll balance"""
     db = next(get_db())
     bankroll = db.query(Bankroll).first()
     if bankroll:
@@ -147,7 +138,6 @@ def show_bankroll():
 @click.argument("probability", type=float)
 @click.argument("bankroll", type=float)
 def kelly_calculator(odds, probability, bankroll):
-    """Calculate Kelly bet size"""
     kelly = ((odds - 1) * probability - (1 - probability)) / (odds - 1)
     full_kelly = kelly * bankroll
     half_kelly = full_kelly / 2
@@ -159,7 +149,6 @@ def kelly_calculator(odds, probability, bankroll):
 @cli.command()
 @click.argument("filename")
 def export_bets(filename):
-    """Export bets to CSV"""
     db = next(get_db())
     bets = db.query(Bet).all()
     import csv
@@ -169,7 +158,7 @@ def export_bets(filename):
         for bet in bets:
             writer.writerow([
                 bet.id,
-                bet.date_placed.strftime("%Y-%m-%d"),
+                bet.date_placed.strftime("%Y-%bound-%d"),
                 bet.sport,
                 bet.event,
                 bet.selection,
@@ -181,5 +170,5 @@ def export_bets(filename):
             ])
     click.echo(f"Bets exported to {filename}!")
 
-if __name__ == "__main__":
+if __name__  =="__main__":
     cli()
