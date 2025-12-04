@@ -18,16 +18,15 @@ def test_bet_creation():
     bookmaker = Bookmaker(name="Test Bookmaker")
     db.add(bookmaker)
     db.commit()
-    bet = Bet(event="Test Event", selection="Test Selection", odds=2.0, stake=100.0, sport="Soccer", bookmaker=bookmaker)
+    bet = Bet(event="Test Event", selection="Test Selection", odds=2.0, actual_stake=100.0, bookmaker=bookmaker)
     db.add(bet)
     db.commit()
     assert bet.id is not None
     assert bet.event == "Test Event"
     assert bet.selection == "Test Selection"
     assert bet.odds == 2.0
-    assert bet.stake == 100.0
-    assert bet.sport == "Soccer"
-    assert bet.result == "pending"
+    assert bet.actual_stake == 100.0
+    assert bet.outcome == "pending"
     assert bet.bookmaker == bookmaker
 
 def test_profit_loss_calculation():

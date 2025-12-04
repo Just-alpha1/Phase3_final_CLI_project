@@ -22,9 +22,11 @@ class Bet(Base):
     event = Column(String(200), nullable=False)
     selection = Column(String(200), nullable=False)
     odds = Column(Float, nullable=False)
-    stake = Column(Float, nullable=False)
-    sport = Column(String(100), nullable=False)
-    result = Column(String(20), default="pending")
+    probability = Column(Float, nullable=True)
+    kelly_stake = Column(Float, nullable=True)
+    actual_stake = Column(Float, nullable=False)
+    outcome = Column(String(20), default="pending")
+    profit = Column(Float, nullable=True)
     date_placed = Column(DateTime, default=datetime.utcnow)
     bookmaker_id = Column(Integer, ForeignKey("bookmakers.id"))
     bookmaker = relationship("Bookmaker", back_populates="bets")
@@ -32,23 +34,23 @@ class Bet(Base):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if 'result' not in kwargs:
-            self.result = "pending"
+        if 'outcome' not in kwargs:
+            self.outcome = "pending"
 
     def profit_loss(self):
-        if self.result == "won":
-            profit = self.stake * (self.odds - 1)
+        if self.outcome == "won":
+            profit = self.actual_stake * (self.odds - 1)
             return round(profit, 2)
-        elif self.result == "lost":
-            loss = -self.stake
+        elif self.outcome == "lost":
+            loss = -self.actual_stake
             return round(loss, 2)
-        elif self.result in ("void", "push"):
+        elif self.outcome in ("void", "push"):
             return 0.0
         else:
             return 0.0
 
     def __repr__(self):
-        return f"<Bet(id={self.id}, event='{self.event}', selection='{self.selection}', result='{self.result}')>"
+        return f"<Bet(id={self.id}, event='{self.event}', selection='{self.selection}', outcome='{self.outcome}')>"
 
 class Bankroll(Base):
     __tablename__ = "bankroll"
