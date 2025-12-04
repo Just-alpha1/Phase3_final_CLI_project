@@ -1,62 +1,79 @@
 Scholar Betting Tracker
 
-Description
+#Description
 
 The Betting Tracker is a professional sports betting CLI application built with Python, SQLAlchemy, and Click. It helps users track their bets, manage bankrolls, calculate profits/losses, and make data-driven decisions to improve long-term betting performance. All data is securely stored in a local SQLite database, ensuring persistent and accurate records without relying on external services.
 
-Author
+#Author
 
 Collins Kiaritha Thuo
 
-Setup Instructions
+#Setup Instructions
 
 1.Clone this repository
+
 2.Navigate into project directory
+
 3.Install pipenv if not already installed
+
 4.Create and activate the virtual environment
 
-BDD (Behavior Driven Development)
+#BDD (Behavior Driven Development)
 
 1.Input: Add a bookmaker with a name (e.g., "Pinnacle")
+
   Output: Bookmaker added and stored in the database
 
 2.Input: Add a bet with event, selection, odds, stake, sport, and bookmaker
+
   Output: Bet recorded and saved in the database
 
 3.Input: Invalid input (e.g., negative stake or non-existent bookmaker)
+
   Output: Error message requesting valid input
 
 4.Input: List all bets
+
   Output: Beautiful table displaying IDs, dates, sports, events, selections, odds, stakes, results, P/L, and bookmakers
 
 5.Input: Update bet result (e.g., mark as "won" or "lost")
+
   Output: Result updated, profit/loss calculated, and bankroll adjusted automatically
 
 6.Input: View current bankroll and stats
+
   Output: Displays current balance, total profit, ROI (%), win rate, average odds, and total bets
 
 7.Input: Calculate Kelly stake with odds, probability, and bankroll
+
   Output: Recommendations for full, half, and quarter Kelly stakes
 
 8.Input: Export bets to CSV
+
   Output: All bets exported to a CSV file
 
 
-Technologies Used
+#Technologies Used
 
  .Python 3.x
+
  .SQLAlchemy
+
  .Click
+
  .SQLite
+
  .Pipenv
+
  .Pytest
+
  .Object-Oriented Programming (OOP)
 
-Contact Information
+#Contact Information
 
 GitHub: https://github.com/Just-alpha1
 
-License
+#License
 
 MIT License
 
