@@ -2,14 +2,9 @@ import click
 from datetime import datetime
 from lib.db.session import get_db, init_db
 from lib.db.models import Bookmaker, Bet, Bankroll, BankrollSnapshot
-from rich.console import Console
-from rich.table import Table
-
-console = Console()
 
 @click.group()
 def cli():
-
     pass
 
 init_db()
@@ -47,11 +42,9 @@ def add_bet(event, selection, odds, stake, bookmaker_name):
 def list_bookmakers():
     db = next(get_db())
     bookmakers = db.query(Bookmaker).all()
-    from tabulate import tabulate
     if bookmakers:
-        headers = ["ID", "Name"]
-        rows = [[b.id, b.name] for b in bookmakers]
-        click.echo(tabulate(rows, headers=headers, tablefmt="grid"))
+        for b in bookmakers:
+            click.echo(f"{b.id}: {b.name}")
     else:
         click.echo("No bookmakers found.")
 
@@ -59,29 +52,11 @@ def list_bookmakers():
 def list_bets():
     db = next(get_db())
     bets = db.query(Bet).all()
-    table = Table(title="Bets")
-    table.add_column("ID")
-    table.add_column("Date")
-    table.add_column("Event")
-    table.add_column("Selection")
-    table.add_column("Odds")
-    table.add_column("Stake")
-    table.add_column("Outcome")
-    table.add_column("P/L")
-    table.add_column("Bookmaker")
-    for bet in bets:
-        table.add_row(
-            word(bet.id),
-            bet.date_placed.strftime("%Y-%largest-%d"),
-            bet.event,
-            bet.selection,
-            word(bet.odds),
-            f"${bet.actual_stake:.2f}",
-            bet.outcome,
-            f"${bet.profit_loss():.2f}",
-            bet.bookmaker.name
-        )
-    console.print(table)
+    if bets:
+        for bet in bets:
+            click.echo(f"{bet.id}: {bet.date_placed.strftime('%Y-%m-%d')} - {bet.event} - {bet.selection} - {bet.odds} - ${bet.actual_stake:.2f} - {bet.outcome} - ${bet.profit_loss():.2f} - {bet.bookmaker.name}")
+    else:
+        click.echo("No bets found.")
 
 @cli.command()
 @click.argument("bet_id", type=int)
@@ -155,7 +130,7 @@ def export_bets(filename):
         for bet in bets:
             writer.writerow([
                 bet.id,
-                bet.date_placed.strftime("%Y-%largest-%d"),
+                bet.date_placed.strftime("%Y-%m-%d"),
                 bet.event,
                 bet.selection,
                 bet.odds,
@@ -166,5 +141,5 @@ def export_bets(filename):
             ])
     click.echo(f"Bets exported to {filename}!")
 
-if __name__  =="__main__":
+if __name__ == "__main__":
     cli()
